@@ -79,14 +79,14 @@ def getScalerVsDAC(hs,lane,asic,ch,defaultTh):
     for th in range (3575,3550,-1):
     #for th in range (3700,3500,-1):
         #set threshold multiple times to deal with flakey interface
-        for regRW in range(0,numRW,1):
+        for _ in range(0,numRW,1):
             fset_scint_threshold(hs,laneNum,asicNum,chNum,th)
 
         #test scalers multiple times to check for inconsistent results
         freqs = []
-        for test in range(0,numTest,1):
+        for _ in range(0,numTest,1):
             scalers = None
-            for regRW in range(0,numRW,1):
+            for _ in range(0,numRW,1):
                 time.sleep(wait) #wait for counters to settle
                 scalers=fget_scint_scaler(hs,laneNum,asicNum)
             if scalers == None:
@@ -99,7 +99,7 @@ def getScalerVsDAC(hs,lane,asic,ch,defaultTh):
         scalerVsDac.append( [th,freqs] )
 
     #return threshold to default value
-    for regRW in range(0,numRW,1):
+    for _ in range(0,numRW,1):
         fset_scint_threshold(hs,laneNum,asicNum,chNum,defaultThNum)
 
     if len(scalerVsDac) == 0 :
@@ -206,13 +206,13 @@ def runHVTest():
         for ch in [0]:
             for hvDac in (50,0):
                 print("Testing HV DAC " + str(hvDac))
-                for regRW in range(0,numRW,1):
+                for _ in range(0,numRW,1):
                     fset_scint_hv(link,lane,asic,ch,hvDac)
                 scalerVsDac = getScalerVsDAC(link,lane,asic,ch,defaultTh)
                 if scalerVsDac != None :
                     results[(link,lane,asic,ch,defaultTh,hvDac)] = scalerVsDac
                 #return to default HV DAC value
-                for regRW in range(0,numRW,1):
+                for _ in range(0,numRW,1):
                     fset_scint_hv(link,lane,asic,ch,hvDac)
 
     #save results dictionary and close file
@@ -238,7 +238,7 @@ def runTrigTest():
     #turn off eveything
     EntireCHs=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]
     EntireAsics=[0,1,2,3,4,5,6,7,8,9]
-    for regRW in range(0,numRW,1):
+    for _ in range(0,numRW,1):
         fset_scint_hv_custom(link,1,EntireAsics,EntireCHs,255)
         fset_scint_th_custom(link,1,EntireAsics,EntireCHs,0)
         fset_scint_hv_custom(link,2,EntireAsics,EntireCHs,255)
@@ -248,7 +248,7 @@ def runTrigTest():
     #EntireCHs=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]
     EntireCHs=[0,8]
     EntireAsics=[0,1,2,3,4,5,6,7,8,9]
-    for regRW in range(0,numRW,1):
+    for _ in range(0,numRW,1):
         fset_scint_hv_custom(link,1,EntireAsics,EntireCHs,0)
         fset_scint_th_custom(link,1,EntireAsics,EntireCHs,3000)
         fset_scint_hv_custom(link,2,EntireAsics,EntireCHs,0)
@@ -292,11 +292,11 @@ def checkRegs(hs,lane):
 def main():
     print("START TEST SCRIPT")
     #checkRegs("-b",1)
-    #runInitialize()
+    runInitialize()
     runTest()
     #runHVTest()
     #runDacScan()
-    #runTrigTest()
+    runTrigTest()
     print("DONE TEST SCRIPT")
 
 if __name__ == '__main__':

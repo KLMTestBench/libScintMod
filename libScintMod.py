@@ -38,7 +38,7 @@ def fget_scint_reg(hs, lane, reg):
 def fget_scint_reg_retry(hs, lane, reg):
     maxTry = 10
     val = None
-    for test in range(0,maxTry,1):
+    for _ in range(0,maxTry,1):
         val = fget_scint_reg(hs, lane, reg)
         if val != None:
             break
@@ -141,4 +141,3 @@ def fset_scint_th_custom(hs,lane,dcs,chs,thval):
         print( "Set DAC\t",str(hs),"\t",str(lane),"\t",str(Iasic),"\t",str(Ich),"\t",str(thval))
       fset_scint_threshold(hs,lane,Iasic,Ich,thval)
       fset_scint_threshold(hs,lane,Iasic,Ich,thval)
-
