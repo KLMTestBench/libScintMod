@@ -87,12 +87,12 @@ def getScalerVsDAC(hs,lane,asic,ch,defaultTh):
         for test in range(0,numTest,1):
             scalers = None
             for regRW in range(0,numRW,1):
-                time.sleep(wait);#wait for counters to settle
+                time.sleep(wait) #wait for counters to settle
                 scalers=fget_scint_scaler(hs,laneNum,asicNum)
             if scalers == None:
                 print "Failed to read trigger scaler, DAC " + str(th) 
                 continue 
-            freq=scalers/T0/1000.0; #in kHz
+            freq=scalers/T0/1000.0  #in kHz
             #freqs.append(freq)
             freqs.append(scalers)
             print "DAC " + str(th) + "\tRate " +  str(freq)
