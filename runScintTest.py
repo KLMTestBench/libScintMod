@@ -67,7 +67,7 @@ def getScalerVsDAC(hs,lane,asic,ch,defaultTh):
     if defaultThNum < 0 or defaultThNum > 4095 :
         return None
     if checkRegInterface(hs,lane) == False:
-        print "Skipping scaler vs DAC measurement for\t" + str(hs) + "\tlane " + str(laneNum) + "\tASIC " + str(asicNum) + "\tch " + str(chNum)
+        print("Skipping scaler vs DAC measurement for\t" + str(hs) + "\tlane " + str(laneNum) + "\tASIC " + str(asicNum) + "\tch " + str(chNum))
         return None
 
     scalerVsDac = []
@@ -75,7 +75,7 @@ def getScalerVsDAC(hs,lane,asic,ch,defaultTh):
     numTest = 3
 
     #measure scaler vs threshold DAC value
-    print "Measuring scaler vs DAC for lane " + str(laneNum) + "\tASIC " + str(asicNum) + " ch " + str(chNum)
+    print( "Measuring scaler vs DAC for lane " + str(laneNum) + "\tASIC " + str(asicNum) + " ch " + str(chNum))
     for th in range (3575,3550,-1):
     #for th in range (3700,3500,-1):
         #set threshold multiple times to deal with flakey interface
@@ -90,12 +90,12 @@ def getScalerVsDAC(hs,lane,asic,ch,defaultTh):
                 time.sleep(wait) #wait for counters to settle
                 scalers=fget_scint_scaler(hs,laneNum,asicNum)
             if scalers == None:
-                print "Failed to read trigger scaler, DAC " + str(th) 
+                print("Failed to read trigger scaler, DAC " + str(th)) 
                 continue 
             freq=scalers/T0/1000.0  #in kHz
             #freqs.append(freq)
             freqs.append(scalers)
-            print "DAC " + str(th) + "\tRate " +  str(freq)
+            print("DAC " + str(th) + "\tRate " +  str(freq))
         scalerVsDac.append( [th,freqs] )
 
     #return threshold to default value
@@ -205,7 +205,7 @@ def runHVTest():
     for asic in [0]:
         for ch in [0]:
             for hvDac in (50,0):
-                print "Testing HV DAC " + str(hvDac)
+                print("Testing HV DAC " + str(hvDac))
                 for regRW in range(0,numRW,1):
                     fset_scint_hv(link,lane,asic,ch,hvDac)
                 scalerVsDac = getScalerVsDAC(link,lane,asic,ch,defaultTh)
@@ -287,7 +287,7 @@ def checkRegs(hs,lane):
         rval1=fget_scint_reg_retry(hs,lane,regNum)
         #rval1=fget_scint_reg(hs,lane,regNum)
         rstr = "REG NUM" + "\t" + str(regNum) + "\t" + "REG VAL" + "\t" + str(rval1)
-        print rstr
+        print(rstr)
 
 def main():
     print("START TEST SCRIPT")

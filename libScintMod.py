@@ -97,7 +97,7 @@ def fget_scint_scaler(hs,lane,dc):
     q = fget_scint_reg_retry(hs,laneNum,gpL+dcNum)
     w = fget_scint_reg_retry(hs,laneNum,gpH+dcNum)
     if (q == None) or (w == None):
-        print "FAILED TO READ SCINT SCALER"
+        print("FAILED TO READ SCINT SCALER")
         return None
     return q+w*65536
 
