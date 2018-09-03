@@ -15,6 +15,10 @@ from libScintMod import fset_scint_hv_custom
 from libScintMod import fset_scint_th_custom
 from libScintMod import checkRegInterface
 
+import config.registers_DC as  registers_DC
+import config.config as  config
+import Input_checks
+
 ##VARIOUS GLOBAL VARIABLES
 wait0=60.0/500.0 #original
 #wait0=120.0/500.0
@@ -30,19 +34,18 @@ def doInitialize(hs,lane,defaultTh,defaultHV):
     laneNum = int(lane)
     defaultThNum = int(defaultTh)
     defaultHVNum = int(defaultHV)
-    if (hs != "-a") and (hs != "-b") and (hs != "-c") and (hs != "-d"):
-        return None
-    if laneNum < 1 or laneNum > 2 :
-        return None
-    if defaultThNum < 0 or defaultThNum > 4095 :
-        return None
-    if defaultHVNum < 0 or defaultHVNum > 255 :
-        return None
 
-    fset_scint_reg(hs,lane,47,4) # set Reg 2F such that T0=4ms
-    fset_scint_reg(hs,lane,47,4) # set Reg 2F such that T0=4ms
-    fset_scint_reg(hs,lane,39,0) # set Reg 39 dec masks all asics for readout such that no ASIC produces readable hits- that way pdaq wont generate QT data 
-    fset_scint_reg(hs,lane,39,0) # set Reg 39 dec masks all asics for readout such that no ASIC produces readable hits- that way pdaq wont generate QT data 
+    Input_checks.check_valid_HSLB(hs.stream)
+    Input_checks.check_valid_line(laneNum)
+    Input_checks.check_valid_threshold(defaultThNum)   
+    Input_checks.check_valid_HV_number(defaultHVNum)
+
+    
+
+    fset_scint_reg(hs,lane,registers_DC.Trigger.index_7,4) # T0=4ms
+    fset_scint_reg(hs,lane,registers_DC.Trigger.index_7,4) # T0=4ms
+    fset_scint_reg(hs,lane,registers_DC.RPC_Parser.index_7 ,0) # set Reg 39 dec masks all asics for readout such that no ASIC produces readable hits- that way pdaq wont generate QT data 
+    fset_scint_reg(hs,lane,registers_DC.RPC_Parser.index_7 ,0) # set Reg 39 dec masks all asics for readout such that no ASIC produces readable hits- that way pdaq wont generate QT data 
 
     #set default HV + DACs
     EntireCHs=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]
@@ -56,16 +59,13 @@ def getScalerVsDAC(hs,lane,asic,ch,defaultTh):
     asicNum = int(asic)
     chNum = int(ch)
     defaultThNum = int(defaultTh)
-    if (hs != "-a") and (hs != "-b") and (hs != "-c") and (hs != "-d"):
-        return None
-    if laneNum < 1 or laneNum > 2 :
-        return None
-    if asicNum < 0 or asicNum > 9 :
-        return None
-    if chNum < 0 or chNum > 14 :
-        return None
-    if defaultThNum < 0 or defaultThNum > 4095 :
-        return None
+    
+    Input_checks.check_valid_HSLB(hs)
+    Input_checks.check_valid_line(laneNum)
+    Input_checks.check_valid_asic_nr(asicNum)
+    Input_checks.check_valid_channel_nr(chNum)
+    Input_checks.check_valid_threshold(defaultThNum)    
+
     if checkRegInterface(hs,lane) == False:
         print("Skipping scaler vs DAC measurement for\t" + str(hs) + "\tlane " + str(laneNum) + "\tASIC " + str(asicNum) + "\tch " + str(chNum))
         return None
@@ -106,21 +106,21 @@ def getScalerVsDAC(hs,lane,asic,ch,defaultTh):
         return None
     return scalerVsDac
 
-def runTest():
+def runTest(hs):
     #test constants
-    link = '-b'
+    
     lane = 1
     defaultTh = 0
     defaultHV = 255
 
     #stop if register interface is broken
-    checkRegInterface(link,lane)
-    if checkRegInterface(link,lane) == False:
+    checkRegInterface(hs,lane)
+    if checkRegInterface(hs,lane) == False:
         return None
     #check if sane register values returned
-    checkRegs(link,lane)
+    checkRegs(hs,lane)
     #initialize threshold + HV to effecitivelt OFF
-    doInitialize(link,lane,defaultTh,defaultHV)
+    doInitialize(hs,lane,defaultTh,defaultHV)
 
     #define results dictionary
     results = {}
@@ -131,18 +131,18 @@ def runTest():
     #for asic in [0,1,2,3,4,5,6,7,8,9]:
     for asic in [0]:
         for ch in [0]:
-            scalerVsDac = getScalerVsDAC(link,lane,asic,ch,defaultTh)
+            scalerVsDac = getScalerVsDAC(hs,lane,asic,ch,defaultTh)
             if scalerVsDac != None :
-                results[(link,lane,asic,ch,defaultTh,defaultHV)] = scalerVsDac
+                results[(hs,lane,asic,ch,defaultTh,defaultHV)] = scalerVsDac
     
     #save results dictionary and close file
     outputFile = open('scalerVsThresholdData.pkl', 'wb')
     pickle.dump(results, outputFile)
     outputFile.close()
 
-def runDacScan():
+def runDacScan(link):
     #test constants
-    link = '-a'
+   
     lane = 1
     defaultTh = 0
     defaultHV = 255
@@ -179,9 +179,9 @@ def runDacScan():
     pickle.dump(results, outputFile)
     outputFile.close()
 
-def runHVTest():
+def runHVTest(link):
     #test constants
-    link = '-a'
+    
     lane = 1
     defaultTh = 0
     defaultHV = 255
@@ -220,20 +220,13 @@ def runHVTest():
     pickle.dump(results, outputFile)
     outputFile.close()
 
-def runTrigTest():
+def runTrigTest(line):
     #test constants
-    link = '-a'
+
     defaultTh = 3400
     defaultHV = 0
     numRW = 2
 
-    #stop if register interface is broken
-    #checkRegInterface(link,1)
-    #if checkRegInterface(link,1) == False:
-    #    return None
-    #checkRegInterface(link,2)
-    #if checkRegInterface(link,2) == False:
-    #    return None
 
     #turn off eveything
     EntireCHs=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14]
@@ -259,46 +252,44 @@ def runTrigTest():
     #    fset_scint_hv(link,1,0,0,0)
     #    fset_scint_threshold(link,1,0,0,3700)
 
-def runInitialize():
+def runInitialize(hs):
     #test constants
-    link = '-b'
+    
     lane = 1
     defaultTh = 0
     defaultHV = 255
 
     #stop if register interface is broken 
     #checkRegInterface(link,lane)
-    if checkRegInterface(link,lane) == False:
+    if checkRegInterface(hs,lane) == False:
         return None 
     #check if sane register values returned
-    checkRegs(link,lane)
+    checkRegs(hs,lane)
     #initialize threshold + HV to effecitivelt OFF
-    doInitialize(link,lane,defaultTh,defaultHV)
+    doInitialize(hs,lane,defaultTh,defaultHV)
 
 def checkRegs(hs,lane):
     laneNum = int(lane)
-    if (hs != "-a") and (hs != "-b") and (hs != "-c") and (hs != "-d"):
-        return None
-    if laneNum < 1 or laneNum > 2 :
-        return None
+    Input_checks.check_valid_HSLB(hs.stream)
+    Input_checks.check_valid_line(laneNum)
 
     for test in range(0,10,1):
         regNum = int(test)
         rval1=fget_scint_reg_retry(hs,lane,regNum)
-        #rval1=fget_scint_reg(hs,lane,regNum)
+       
         rstr = "REG NUM" + "\t" + str(regNum) + "\t" + "REG VAL" + "\t" + str(rval1)
         print(rstr)
 
 def main():
     print("START TEST SCRIPT")
-    #checkRegs("-b",1)
-    runInitialize()
-    runTest()
-    #runHVTest()
-    #runDacScan()
-    runTrigTest()
+    reghs = config.reghs_cpr107
+    checkRegs(reghs,1)
+    runInitialize(reghs)
+    runTest(reghs)
+    runHVTest(reghs)
+    runDacScan(reghs)
+    runTrigTest(reghs)
     print("DONE TEST SCRIPT")
 
 if __name__ == '__main__':
     main()
-
