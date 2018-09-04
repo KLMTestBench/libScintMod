@@ -10,6 +10,6 @@ class Xilinx_vm(ssh_host.ssh_Host):
     UserName="***"
     PassWord="***"
 
-i_cfg = remote_impact.Impact_conf("/mnt/c/Users/Peschke/Documents/GitHub/libScintMod/TopLevel.bit","2")
+i_cfg = remote_impact.Impact_conf("path/to/your/bitfile.bit",position="2")
 
 remote_impact.Program_FPGA(Xilinx_vm,i_cfg,cleanUp=False)
