@@ -286,9 +286,9 @@ def main():
     checkRegs(reghs,1)
     runInitialize(reghs)
     runTest(reghs)
-    runHVTest(reghs)
-    runDacScan(reghs)
-    runTrigTest(reghs)
+    #runHVTest(reghs)
+    #runDacScan(reghs)
+    #runTrigTest(reghs)
     print("DONE TEST SCRIPT")
 
 if __name__ == '__main__':
