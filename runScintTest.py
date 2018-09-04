@@ -220,7 +220,7 @@ def runHVTest(link):
     pickle.dump(results, outputFile)
     outputFile.close()
 
-def runTrigTest(line):
+def runTrigTest(link):
     #test constants
 
     defaultTh = 3400
