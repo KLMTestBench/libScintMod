@@ -16,7 +16,7 @@ from libScintMod import fset_scint_th_custom
 from libScintMod import checkRegInterface
 
 import config.registers_DC as  registers_DC
-import config.config as  config
+import config.config_hawaii as  config
 import Input_checks
 
 ##VARIOUS GLOBAL VARIABLES
