@@ -1,3 +1,4 @@
+import re
 class py_reghs:
     filePath = "reghs" # the location of the reghs command on the computer
     stream = "" # the stream location of the HSLB -abcd
@@ -7,7 +8,7 @@ class py_reghs:
 
 def check_return_from_reghs(commandline):
     if "=" not in commandline:
-        raise Exception("Unexpected return from Commandpromt. No '=' pressent in = '" +commandline +"'",commandline )
+        raise Exception("Unexpected return from Commandpromt. No '=' pressent in = '" + str(commandline) +"'",commandline )
         
 def extract_number_from_reghs_return(commandline):
     ret = commandline.split("=")[1]
@@ -18,7 +19,10 @@ def extract_number_from_reghs_return(commandline):
 def reghs_call(shell,reghs_cfg, key, value=""):
     line = reghs_cfg.filePath+ " " +reghs_cfg.stream + " " + reghs_cfg.option + " " +key +" " +value
     shell.sendline(line)
-    shell.prompt(timeout=reghs_cfg.timeout)
+    rootprompt = re.compile('.*[$#]')
+    shell.expect([rootprompt,'assword.*: '])
+    #print(i)
+    #shell.prompt(timeout=reghs_cfg.timeout)
     
     if len(value)>0:
         return None
@@ -32,7 +36,9 @@ def reghs_call(shell,reghs_cfg, key, value=""):
 def reghs_stream(shell, reghs_cfg, file):
     line = reghs_cfg.filePath+ " " +reghs_cfg.stream + " stream " + file
     shell.sendline(line)
-    shell.prompt(timeout=reghs_cfg.timeout)
+    rootprompt = re.compile('.*[$#]')
+    i = shell.expect([rootprompt,'assword.*: '])
+    #shell.prompt(timeout=reghs_cfg.timeout)
     return shell.before
 
 
