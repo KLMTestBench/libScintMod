@@ -8,7 +8,7 @@ import sys
 import time
 import getpass
 import Linux_Helpers.py_ssh as py_sudo_ssh
-import config.config as config
+import config.config_hawaii as config
 import Input_checks
 import config.registers_DC as registers_DC
 import config.ADDRESS_MAP as ADDRESS_MAP
@@ -139,7 +139,7 @@ def fset_scint_hv_custom(hs,lane,dcs,chs,val):
   for Iasic in dcs:
     for Ich in chs:
       if debug == True:
-        print( "Set HV\t",str(hs),"\t",str(lane),"\t",str(Iasic),"\t",str(Ich),"\t",str(val))
+        print( "Set HV\t"+str(hs.stream)+"\t"+str(lane)+"\t"+str(Iasic)+"\t"+str(Ich)+"\t"+str(val))
       fset_scint_hv(hs,lane,Iasic,Ich,val) 
       fset_scint_hv(hs,lane,Iasic,Ich,val) 
 
@@ -147,6 +147,6 @@ def fset_scint_th_custom(hs,lane,dcs,chs,thval):
   for Iasic in dcs:
     for Ich in chs:
       if debug == True:
-        print( "Set DAC\t",str(hs),"\t",str(lane),"\t",str(Iasic),"\t",str(Ich),"\t",str(thval))
+        print( "Set DAC\t" + str(hs.stream) + "\t" + str(lane) + "\t",str(Iasic) + "\t",str(Ich) + "\t" +str(thval))
       fset_scint_threshold(hs,lane,Iasic,Ich,thval)
       fset_scint_threshold(hs,lane,Iasic,Ich,thval)

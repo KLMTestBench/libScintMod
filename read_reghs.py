@@ -4,7 +4,7 @@ sys.path.insert(0, '../Linux_Helpers/')
 import Linux_Helpers.py_ssh as py_ssh
 import getpass
 from timeit import default_timer as timer
-import config.config as config
+import config.config_hawaii as config
 from Linux_Helpers.py_reghs import reghs_call
 
 
