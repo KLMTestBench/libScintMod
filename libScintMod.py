@@ -12,6 +12,8 @@ import config.config_hawaii as config
 import Input_checks
 import config.registers_DC as registers_DC
 import config.ADDRESS_MAP as ADDRESS_MAP
+import Linux_Helpers.shell as shell
+
 
 from Linux_Helpers.py_reghs import reghs_call,reghs_stream,reghs_stream_adapter
 
@@ -20,10 +22,8 @@ reghs = config.reghs_cpr107
 regWait = 0.01
 debug = True
 
-
-s=py_sudo_ssh.get_ssh_connection(hostname=config.IDLab.HostName,username=config.IDLab.UserName,password=config.IDLab.PassWord)
-py_sudo_ssh.ssh(s,hostname=config.PocketDAQ.HostName,username=config.PocketDAQ.UserName,password= config.PocketDAQ.PassWord)
-py_sudo_ssh.ssh(s,hostname=config.copper.HostName,username=config.copper.UserName,password= config.copper.PassWord)
+s = shell.remoteShell(config.ssh_path)
+#s=shell.LocalShell()
 
 
 
@@ -147,6 +147,6 @@ def fset_scint_th_custom(hs,lane,dcs,chs,thval):
   for Iasic in dcs:
     for Ich in chs:
       if debug == True:
-        print( "Set DAC\t" + str(hs.stream) + "\t" + str(lane) + "\t",str(Iasic) + "\t",str(Ich) + "\t" +str(thval))
+        print( "Set DAC\t" + str(hs.stream) + "\t" + str(lane) + "\t" + str(Iasic) + "\t"+str(Ich) + "\t" +str(thval))
       fset_scint_threshold(hs,lane,Iasic,Ich,thval)
       fset_scint_threshold(hs,lane,Iasic,Ich,thval)
