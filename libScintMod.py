@@ -22,7 +22,7 @@ reghs = config.reghs_cpr107
 regWait = 0.01
 debug = True
 
-s = shell.remoteShell2(config.coppper_tunnel)
+s = shell.remoteShell2(config.copper_tunnel)
 #s=shell.LocalShell()
 
 
