@@ -12,7 +12,7 @@ import config.config_hawaii as config
 import Input_checks
 import config.registers_DC as registers_DC
 import config.ADDRESS_MAP as ADDRESS_MAP
-import Linux_Helpers.shell as shell
+import Linux_Helpers.remoteshell2 as shell
 
 
 from Linux_Helpers.py_reghs import reghs_call,reghs_stream,reghs_stream_adapter
