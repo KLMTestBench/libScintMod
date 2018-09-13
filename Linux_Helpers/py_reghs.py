@@ -42,13 +42,14 @@ def reghs_stream(shell, reghs_cfg, file):
 
 
 def reghs_stream_adapter(shell, hs,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12):
-    dummyfile="streamfiles/test%s%s%s%s%s%s%s%s%s%s%s%s.txt" %(arg1,arg2, arg3, arg4 ,arg5, arg6 ,arg7,arg8, arg9,arg10, arg11,arg12)
+    workingDir = "/home/belle2/libScintMod/"
+    dummyfile= workingDir + "streamfiles/test%s%s%s%s%s%s%s%s%s%s%s%s.txt" %(arg1,arg2, arg3, arg4 ,arg5, arg6 ,arg7,arg8, arg9,arg10, arg11,arg12)
     dummyfile = dummyfile.replace('0x','')
     #s1="perl -e 'printf(\"%%c%%c%%c%%c%%c%%c%%c%%c%%c%%c%%c%%c\", %s,%s, %s,%s,%s,%s,%s,%s, %s,%s,%s,%s)'" %(arg1,arg2, arg3, arg4 ,arg5, arg6 ,arg7,arg8, arg9,arg10, arg11,arg12)
     #s1=s1+" > " +dummyfile +" 2>&1"
     #shell.sendLine(s1)
     ret = reghs_stream(shell,hs,dummyfile)
-    print (ret)
+    #print (ret)
     if "directory" in ret:
         s1="perl -e 'printf(\"%%c%%c%%c%%c%%c%%c%%c%%c%%c%%c%%c%%c\", %s,%s, %s,%s,%s,%s,%s,%s, %s,%s,%s,%s)'" %(arg1,arg2, arg3, arg4 ,arg5, arg6 ,arg7,arg8, arg9,arg10, arg11,arg12)
         s1=s1+" > " +dummyfile +" 2>&1"
@@ -58,5 +59,5 @@ def reghs_stream_adapter(shell, hs,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,
         if "directory" in ret:
             raise Exception("unable to load stream file "+dummyfile)
 
-    print(ret)   
+    #print(ret)   
     return ret
