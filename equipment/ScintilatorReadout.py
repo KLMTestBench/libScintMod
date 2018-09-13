@@ -8,14 +8,14 @@ import sys
 import Input_checks
 import config.registers_DC as registers_DC
 import config.ADDRESS_MAP as ADDRESS_MAP
-from Linux_Helpers.py_reghs import reghs_call,reghs_stream,reghs_stream_adapter
+from Linux_Helpers.py_reghs import py_reghs
 
 
 class ScintilatorReadout:
 
-    def __init__(self,reghs,shell,debugOutPut=False):
+    def __init__(self,reghs,debugOutPut=False):
         self.reghs = reghs
-        self.shell = shell
+        
         self.maxTry = 10
         self.retries = range(self.maxTry)
         self.regWait = 0.01
@@ -32,7 +32,7 @@ class ScintilatorReadout:
         Input_checks.check_valid_line(laneNum)
         regNum = int(reg)
         reghex = int(ADDRESS_MAP.Scintillator_Mother_t(laneNum).STATUS_START + 2 + regNum)
-        ret = reghs_call(self.shell, self.reghs, hex(int(reghex))) 
+        ret = self.reghs.call(hex(int(reghex))) 
         time.sleep(self.regWait)
         return ret
 
@@ -76,8 +76,7 @@ class ScintilatorReadout:
         w=(val & 0x000f) / 0x0001  
         
         #print lane, reg, val, x, y, r
-
-        reghs_stream_adapter(self.shell,self.reghs, 
+        self.reghs.stream(
         hex(0xf2),
         hex(int(lane*16+0xA)), 
         hex(int(0xf*16+x)),
@@ -115,8 +114,7 @@ class ScintilatorReadout:
         t=int((THval & 0x0f00) / 0x0100)
         q=int((THval & 0x00f0) / 0x0010 )
         w=int((THval & 0x000f) / 0x0001)
-
-        reghs_stream_adapter(self.shell,self.reghs, 
+        self.reghs.stream(
         hex(0xf2),   
         hex(lane*16+0xB), 
         hex(dc*16+rH),
@@ -137,7 +135,7 @@ class ScintilatorReadout:
     def set_HV(self,lane,dc,ch,DACval):
         q=(DACval & 0x00f0) / 0x0010 
         w=(DACval & 0x000f) / 0x0001 
-        reghs_stream_adapter(self.shell, self.reghs, 
+        self.reghs.stream(
         hex(0xf2),   
         hex(lane*16+0xC), 
         hex(0x0*16+dc),
