@@ -273,7 +273,7 @@ def checkRegs(hs,lane):
     Input_checks.check_valid_HSLB(hs.stream)
     Input_checks.check_valid_line(laneNum)
 
-    for test in range(0,10,1):
+    for test in range(10):
         regNum = int(test)
         rval1=fget_scint_reg_retry(hs,lane,regNum)
        
