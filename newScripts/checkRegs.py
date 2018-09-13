@@ -1,17 +1,24 @@
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir) 
+
 import struct
 import sys 
 import string
 import os
 
+import external.bit_ops as bit_ops
+
 class PROCESS_BINARY(object):
 
     #__INIT__#
-    def __init__(self,inputFileName):
+    def __init__(self,inputFileName,outputFile):
         self.inputFileName = inputFileName
         self.inputFile = None
         self.fileContent = None
         self.fileArray = []
-
+        self.outputFile = outputFile
         #constants
 
         print("GET DATA")
@@ -57,33 +64,39 @@ class PROCESS_BINARY(object):
     def dumpRegs(self):
         if len(self.fileArray) == None:
             return
+        with open(self.outputFile, "w") as f:
+          f.write("allLine; Lane; Reg; Data\n") 
 
-        #loop over input file 4 bytes at a time, look for packet header words
-        for lineNum in range(0,len(self.fileArray),3):
-            line0 = self.fileArray[lineNum]
-            line1 = self.fileArray[lineNum+1]
-            line2 = self.fileArray[lineNum+2]
-            #print(lineNum,"\t",hex(line0),"\t",hex(line1),"\t",hex(line2))
+          #loop over input file 4 bytes at a time, look for packet header words
+          for lineNum in range(0,len(self.fileArray),3):
+              line0 = self.fileArray[lineNum]
+              line1 = self.fileArray[lineNum+1]
+              line2 = self.fileArray[lineNum+2]
+              #print(lineNum,"\t",hex(line0),"\t",hex(line1),"\t",hex(line2))
 
-            lane = (line0 & 0xF000 ) >> 12
-            reg = (line1 & 0x000F << 4) + ( (line1 & 0xF000) >> 12 )
-            data = ((line1 & 0x0F00) << 4 ) + ((line2 & 0x00F0) << 4 ) + ((line2 & 0x000F) << 4 ) + ((line2 & 0xF000) >> 12 )
+              lane =bit_ops.takeFromRight( bit_ops.leftRotateInt16(line0,4) , 4)
+              reg = bit_ops.takeFromRight( bit_ops.leftRotateInt16(line1,4) , 8) #(line1 & 0x000F) << 4 + ( (line1 & 0xF000) >> 12 )
+              data = bit_ops.leftRotateInt16(line2,4)
+              #data = ((line1 & 0x0F00) << 4 ) + ((line2 & 0x00F0) << 4 ) + ((line2 & 0x000F) << 4 ) + ((line2 & 0xF000) >> 12 )
 
-            allLine = line2 + (line1 << 16) + (line0 << 32)
+              allLine = line2 + (line1 << 16) + (line0 << 32)
 
-            print(hex(allLine),"\tLane ",hex(lane),"\tReg ",reg,"\tData ",hex(data))
 
-            #if lineNum > 100 :
-            #    break
+              print(hex(allLine),"\tLane ",hex(lane),"\tReg ",reg,"\tData ",hex(data))
+              f.write(str(allLine)+"; " + str(lane) + "; "+ str(reg) + "; " +str(data)+"\n") 
+
 
 
 def main():
 
-    if len(sys.argv) != 2 :
-        print("processBinary: need to provide input file name")
-        return
-    fileName = sys.argv[1]
-    processBinary = PROCESS_BINARY(fileName)
+    #if len(sys.argv) != 2 :
+    #    print("processBinary: need to provide input file name")
+    #    return
+    #fileName = sys.argv[1]
+    #processBinary = PROCESS_BINARY(fileName)
+
+
+     processBinary = PROCESS_BINARY("rcBF3.dat","out.csv")
 
 if __name__ == '__main__':
     main()
