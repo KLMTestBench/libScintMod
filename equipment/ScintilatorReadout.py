@@ -13,13 +13,19 @@ from Linux_Helpers.py_reghs import reghs_call,reghs_stream,reghs_stream_adapter
 
 class ScintilatorReadout:
 
-    def __init__(self,reghs,shell):
+    def __init__(self,reghs,shell,debugOutPut=False):
         self.reghs = reghs
         self.shell = shell
         self.maxTry = 10
         self.retries = range(self.maxTry)
         self.regWait = 0.01
-        self.debug = True
+        self.debug = debugOutPut
+
+
+    def debugPrint(self,line):
+        if(self.debug):
+            print(line)
+
 
     def get_register_impl(self, lane, reg):
         laneNum = int(lane)
@@ -72,10 +78,18 @@ class ScintilatorReadout:
         #print lane, reg, val, x, y, r
 
         reghs_stream_adapter(self.shell,self.reghs, 
-        hex(0xf2),   hex(lane*16+0xA), hex(0xf*16+x),
-        hex(y*16+r), hex(t*16+q),      hex(w*16+0x8),
-        hex(0xf2),   hex(lane*16+0xA), hex(0xf*16+x),
-        hex(y*16+r), hex(t*16+q),      hex(w*16+0x8))
+        hex(0xf2),
+        hex(int(lane*16+0xA)), 
+        hex(int(0xf*16+x)),
+        hex(int(y*16+r)), 
+        hex(int(t*16+q)),      
+        hex(int(w*16+0x8)),
+        hex(0xf2),   
+        hex(lane*16+0xA), 
+        hex(0xf*16+x),
+        hex(int(y*16+r)), 
+        hex(int(t*16+q)),      
+        hex(int(w*16+0x8)))
         time.sleep(self.regWait)
 
     #get channel scaler variable
@@ -96,17 +110,25 @@ class ScintilatorReadout:
 
     #set channel threshold DAC value
     def set_threshold(self,lane,dc,ch,THval):
-        rH=((ch*2) & 0xf0) / 0x10
-        rL=((ch*2) & 0x0f) / 0x01
-        t=(THval & 0x0f00) / 0x0100
-        q=(THval & 0x00f0) / 0x0010 
-        w=(THval & 0x000f) / 0x0001
+        rH=int(((ch*2) & 0xf0) / 0x10)
+        rL=int(((ch*2) & 0x0f) / 0x01)
+        t=int((THval & 0x0f00) / 0x0100)
+        q=int((THval & 0x00f0) / 0x0010 )
+        w=int((THval & 0x000f) / 0x0001)
 
         reghs_stream_adapter(self.shell,self.reghs, 
-        hex(0xf2),   hex(lane*16+0xB), hex(dc*16+rH),
-        hex(rL*16+0),hex(t*16+q),      hex(w*16+0x8),
-        hex(0xf2),   hex(lane*16+0xB), hex(dc*16+rH),
-        hex(rL*16+0),hex(t*16+q),      hex(w*16+0x8) )
+        hex(0xf2),   
+        hex(lane*16+0xB), 
+        hex(dc*16+rH),
+        hex(rL*16+0),
+        hex(t*16+q),      
+        hex(w*16+0x8),
+        hex(0xf2),   
+        hex(lane*16+0xB), 
+        hex(dc*16+rH),
+        hex(rL*16+0),
+        hex(t*16+q),      
+        hex(w*16+0x8) )
         time.sleep(self.regWait)
 
     
@@ -116,10 +138,18 @@ class ScintilatorReadout:
         q=(DACval & 0x00f0) / 0x0010 
         w=(DACval & 0x000f) / 0x0001 
         reghs_stream_adapter(self.shell, self.reghs, 
-        hex(0xf2),   hex(lane*16+0xC), hex(0x0*16+dc),
-        hex(ch*16+0),hex(0*16+q),      hex(w*16+0x8),
-        hex(0xf2),   hex(lane*16+0xC), hex(0x0*16+dc),
-        hex(ch*16+0),hex(0*16+q),      hex(w*16+0x8))  
+        hex(0xf2),   
+        hex(lane*16+0xC), 
+        hex(0x0*16+dc),
+        hex(ch*16+0),
+        hex(int(0*16+q)),      
+        hex(int(w*16+0x8)),
+        hex(int(0xf2)),   
+        hex(int(lane*16+0xC)), 
+        hex(int(0x0*16+dc)),
+        hex(int(ch*16+0)),
+        hex(int(0*16+q)),      
+        hex(int(w*16+0x8)))  
         time.sleep(self.regWait)
 
 
@@ -127,15 +157,13 @@ class ScintilatorReadout:
     def set_hv_custom(self,lane,dcs,chs,val):
         for Iasic in dcs:
             for Ich in chs:
-                if self.debug:
-                    print( "Set HV\t"+str(self.reghs.stream)+"\t"+str(lane)+"\t"+str(Iasic)+"\t"+str(Ich)+"\t"+str(val))
+                self.debugPrint("Set HV\t"+str(self.reghs.stream)+"\t"+str(lane)+"\t"+str(Iasic)+"\t"+str(Ich)+"\t"+str(val))
                 self.set_HV(lane,Iasic,Ich,val) 
                 self.set_HV(lane,Iasic,Ich,val) 
 
     def set_th_custom(self,lane,dcs,chs,thval):
         for Iasic in dcs:
             for Ich in chs:
-                if self.debug:
-                    print( "Set DAC\t" + str(self.reghs.stream) + "\t" + str(lane) + "\t" + str(Iasic) + "\t"+str(Ich) + "\t" +str(thval))
+                self.debugPrint("Set DAC\t" + str(self.reghs.stream) + "\t" + str(lane) + "\t" + str(Iasic) + "\t"+str(Ich) + "\t" +str(thval))
                 self.set_threshold(lane,Iasic,Ich,thval)
                 self.set_threshold(lane,Iasic,Ich,thval)
