@@ -90,11 +90,13 @@ class Trigger_Path:
 
 
 class Run_Control:
-    FIFO_FLAGS=0x06B0 #FIFO flags
-    SNUM_PKTS=0x06B1  #Number of scint. packets
-    SRC_WORDS=0x06B2  #Number of scint. run control words
-    RNUM_PKTS=0x06B3  #Number of RPC packets
-    RRC_WORDS=0x06B4  #Last RPC run control words
+    FIFO_FLAGS  =0x06B0 #FIFO flags
+    SNUM_PKTS   =0x06B1  #Number of scint. packets
+    SRC_WORDS   =0x06B2  #Number of scint. run control words
+    RNUM_PKTS   =0x06B3  #Number of RPC packets
+    RRC_WORDS   =0x06B4  #Last RPC run control words
+    SCINT_PKT_SZ=0x0038 
+    RPC_PKT_SZ  =0x0039
 
 
 #Some of the registers are permanently monitored by a script 'dcregs.sh', which is located on

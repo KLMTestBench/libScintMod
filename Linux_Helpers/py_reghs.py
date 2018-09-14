@@ -41,14 +41,13 @@ class py_reghs:
         if value:
             value = convert(value)
             line = line +" " + hex(value)
-            print(line)
             self.shell.sendLine(line)
             return
 
         else:
-            print(line)
+            
             ret = self.shell.sendAndRecieve(line)
-            print(ret)
+            
             self.check_return(ret)
             ret = self.extract_number(ret)
             return ret
