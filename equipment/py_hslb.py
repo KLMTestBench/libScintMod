@@ -20,13 +20,13 @@ class py_hslb:
         self.reghs_intern = py_reghs(shell,hslb_c)
         
 
-    def staths(self):
+    def status(self):
         line = self.config.FilePath+"staths " + self.config.link
         ret = self.shell.sendAndRecieve(line)
         return ret
         
 
-    def booths(self,FirmWareFile=None):
+    def boot(self,FirmWareFile=None):
         if FirmWareFile:
             Firmware=FirmWareFile
         else:
@@ -50,4 +50,10 @@ class py_hslb:
     def reghs_stream(self, arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12):
         ret = self.reghs_intern.stream( arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12)
         return ret
-        
+    
+    def reghs_setAndCheck(self,key,value):
+        self.reghs(key,value)
+        ret = self.reghs(key)
+        if ret != value:
+            raise Exception("unable to set key="+str(key),key)
+            

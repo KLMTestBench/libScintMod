@@ -17,15 +17,15 @@ class py_ftsw:
         self.conf.resetft_FN = "resetft"
         self.conf.trigft_FN = "trigft"
 
-    def statft(self):
+    def status(self):
         ret =  self.shell.sendAndRecieve(self.conf.statft_FN +' -'+ str(self.conf.ID))
         return ret
     
-    def resetft(self):
+    def reset(self):
         ret =  self.shell.sendAndRecieve(self.conf.resetft_FN +' -'+ str(self.conf.ID))
         return ret
 
-    def trigft(self,rate,option="pulse"):
+    def trigger(self,rate,option="pulse"):
         line = self.conf.trigft_FN +' -'+ str(self.conf.ID)+ " " +option + " " +str(rate) +" -1"
         ret =  self.shell.sendAndRecieve(line)
         return ret
