@@ -10,10 +10,10 @@ def debugPrint(doPrint,msg):
         print(msg)
 
 
-def get_ssh_connection(hostname,username,password,debugPrintouts=False):
-    debugPrint(debugPrintouts,"Connecting to host = "+ hostname)
+def get_ssh_connection(hostname,username,password,port =22,debugPrintouts=False):
+    debugPrint(True,"Connecting to host = "+ hostname + " port " + str(port))
     remoteShell = pxssh.pxssh()    
-    remoteShell.login(hostname, username, password)
+    remoteShell.login(hostname, username, password,port=port)
     return remoteShell
 
 
@@ -73,18 +73,12 @@ def append_conf_file(s,password,fileName,Line):
     set_content(s,Line,fileName,Append=True)
     s.sendline("exit")
 
-def ssh_connect(ssh_hosts_path,elevate_shell=False, debugPrintouts=False):
-    h1 = ssh_hosts_path[0]
-    shell = get_ssh_connection(hostname=h1.HostName,username=h1.UserName,password=h1.PassWord,debugPrintouts=debugPrintouts)
-    
-    for i in range(1,len(ssh_hosts_path)):
-        
-        nextHost = ssh_hosts_path[i]
-        ssh(shell,hostname=nextHost.HostName,username=nextHost.UserName,password=nextHost.PassWord,debugPrintouts=debugPrintouts)
-    
 
-    if elevate_shell:
-        last = len(ssh_hosts_path) - 1
-        sudo(remoteShell=shell,password=ssh_hosts_path[last].PassWord,command="sudo -i")
+
+def ssh_connect(ssh_hosts_path,elevate_shell=False, debugPrintouts=False):
+    h1 = ssh_hosts_path
+    shell = get_ssh_connection(hostname=h1.HostName,username=h1.UserName,password=h1.PassWord,port=h1.port,debugPrintouts=debugPrintouts)
+    
+    
     
     return shell
