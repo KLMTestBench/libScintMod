@@ -4,3 +4,5 @@
 /config/config_hawaii.py
 *l.bit
 /.ipynb_checkpoints/*
+/config/credentials.txt
+/config/IDLAB.txt
