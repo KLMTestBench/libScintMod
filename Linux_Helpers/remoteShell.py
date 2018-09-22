@@ -1,4 +1,4 @@
-from shell import baseShell
+from Linux_Helpers.shell import baseShell
 import Linux_Helpers.py_ssh as py_ssh
 import subprocess
 import os
