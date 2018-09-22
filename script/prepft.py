@@ -6,10 +6,12 @@ class prepft_conf:
     use_EKLM = False
 
 def prepft(ftsw,config=prepft_conf()):
-    print(ftsw.reset())
-    print(ftsw.set_trigger_limiter(config.TL_NumberOfTrigger,config.TL_timeInMicroSeconds))
-    print(ftsw.set_lookBackWindow(config.lookBackWindow))
-    print(ftsw.utime())
-    print(ftsw.reset_ttaddr(config.use_EKLM))
-    print(ftsw.prepare_devices(config.devices,config.use_EKLM))
-    print(ftsw.reset())
+    ret = ""
+    ret += ftsw.reset()
+    ret += ftsw.set_trigger_limiter(config.TL_NumberOfTrigger,config.TL_timeInMicroSeconds)
+    ret += ftsw.set_lookBackWindow(config.lookBackWindow)
+    ret += ftsw.utime()
+    ret += ftsw.reset_ttaddr(config.use_EKLM)
+    ret += ftsw.prepare_devices(config.devices,config.use_EKLM)
+    ret += ftsw.reset()
+    return ret
