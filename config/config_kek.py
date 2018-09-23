@@ -3,6 +3,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
 
+
 from Linux_Helpers.ssh_host import ssh_Host
 from Linux_Helpers.py_reghs import reghs_conf
 from equipment.py_ftsw import ftsw_conf
@@ -10,35 +11,45 @@ from script.prog_fee import fee_conf
 from script.prepft import prepft_conf
 
 
-with open("config/credentials.txt") as f:
-    credentials = f.readlines()
-
 
 
 
 class kek_setup(ssh_Host):
     HostName="127.0.0.1"
-    PassWord=credentials[1].strip()
-    UserName=credentials[0].strip()
+    IdentityFile= currentdir+"/b2klm"
+    UserName="b2klm"
 
 class ttd11(kek_setup):
     port = 10041
+    endstring = "[b2klm@ttd11 ~]"
 
 class klm01(kek_setup):
     port = 10040
+    endstring = "b2klm.klm@klm01"
 
 class klmpc02(kek_setup):
     port = 10043
 
-
-
+class idlab(klmpc02):
+    startCommand = ("ssh idlab@172.22.18.20","source bashrc-ise.sh")
+    endstring="idlab@idlab-klm"
 
 
 class klm_ftsw(ftsw_conf):
     ID=191
 
+class cpr7001(klm01):
+    startCommand = ("ssh cpr7001")
+    endstring="b2klm.klm@cpr"
 
-
+class cpr7002(cpr7001):
+    startCommand = ("ssh cpr7002")
+    
+class cpr7003(cpr7001):
+    startCommand = ("ssh cpr7003")
+    
+class cpr7004(cpr7001):
+    startCommand = ("ssh cpr7004")
 
 
 workingDirektory="/home/belle2/libScintMod/newScripts/"

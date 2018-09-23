@@ -33,14 +33,31 @@ def remove_comand(line,searchFor='\n'):
     line = line[index:]
     return line
 
+
+def handle_startcommand(chan,startup):
+    if isinstance(startup,str):
+        x = chan.sendAndRecieve(startup)
+        #print(x) 
+    else:
+        for line in startup:
+            x = chan.sendAndRecieve(line)
+            #print(x)
+
+def connect(client,host):
+    if host.IdentityFile:
+        client.connect(host.HostName,get_port(host),username=host.UserName, key_filename=host.IdentityFile)
+    else:
+        client.connect(host.HostName,get_port(host),username=host.UserName, password=host.PassWord)
+
 class remoteShell3(baseShell):
   def __init__(self, host, debugPrintouts=False):
     self.timeout=1  
     self.readDeley=0.5
+    self.conf = host
     self.client =  paramiko.SSHClient()
     self.client.load_system_host_keys()
     self.client.set_missing_host_key_policy(paramiko.WarningPolicy())
-    self.client.connect(host.HostName,get_port(host),username=host.UserName, password=host.PassWord)
+    connect(self.client, host)
     self.chan = self.client.invoke_shell()
     self.chan.set_combine_stderr(True)
     self.bufsize=256
@@ -50,8 +67,10 @@ class remoteShell3(baseShell):
         data = self.chan.recv(self.bufsize)
         b64 = data.decode()
         ret = ret + escape_ansi(b64)
-    
-    #print(ret)
+
+
+    handle_startcommand(self,host.startCommand)
+
 
     
 
@@ -73,28 +92,32 @@ class remoteShell3(baseShell):
         ret = remove_comand_promt(ret)
     return ret
 
-  def sendAndRecieveLong(self,line,tries = 5):
-    endstr = "endOfCommand"
+  def sendAndRecieveLong(self,line,tries = 50,endstr = None):
+    if endstr == None:
+        endstr = self.conf.endstring
+
     ret = ""
-    x = self.sendAndRecieve(line+" && echo \""+endstr+"\"")
+    x = self.sendAndRecieve(line)
+    #print(x)
     x=remove_comand(x)
+    #print(x)
     current_tries = 0
     while current_tries < tries:
         current_tries+=1
         if not x: #x is empty
-            print("empty")
+            #print("empty")
             pass
         elif endstr in x:
-            print("found")
+            #print("found")
             ret += x
             break
         else:
-            print("more data")
+            #print("more data")
             ret += x
             current_tries =0
-        x =self.sendAndRecieveNN('')
-        print(x)
-    
+        x =self.sendAndRecieveNN('',removePromt=False)
+        #print(x)
+    #print(ret)
     ret=remove_comand_promt(ret,endstr)        
     return ret
 
