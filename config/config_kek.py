@@ -9,7 +9,7 @@ from Linux_Helpers.py_reghs import reghs_conf
 from equipment.py_ftsw import ftsw_conf
 from script.prog_fee import fee_conf
 from script.prepft import prepft_conf
-
+from equipment.py_hslb import hslb_config
 
 
 
@@ -30,7 +30,7 @@ class klm01(kek_setup):
 class klmpc02(kek_setup):
     port = 10043
 
-class idlab(klmpc02):
+class idlab(klm01):
     startCommand = ("ssh idlab@172.22.18.20","source bashrc-ise.sh")
     endstring="idlab@idlab-klm"
 
@@ -38,18 +38,18 @@ class idlab(klmpc02):
 class klm_ftsw(ftsw_conf):
     ID=191
 
-class cpr7001(klm01):
-    startCommand = ("ssh cpr7001")
-    endstring="b2klm.klm@cpr"
+class cpr7001(kek_setup):
+    port=17001
+    IdentityFile = currentdir+"/cpr700x"
 
 class cpr7002(cpr7001):
-    startCommand = ("ssh cpr7002")
-    
+    port=17002
+        
 class cpr7003(cpr7001):
-    startCommand = ("ssh cpr7003")
+    port=17003
     
 class cpr7004(cpr7001):
-    startCommand = ("ssh cpr7004")
+    port=17004
 
 
 workingDirektory="/home/belle2/libScintMod/newScripts/"
@@ -92,4 +92,7 @@ class klm_prepft_with_EKLM(prepft_conf):
     TL_NumberOfTrigger = 1
     TL_timeInMicroSeconds = 200
     use_EKLM = True
+
+
+    
 
