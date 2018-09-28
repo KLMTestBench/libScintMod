@@ -12,6 +12,14 @@ class hslb_config:
     timeout=0.1
     reghs_options="fee32"
 
+class hslb_config_obj:
+    def __init__(self,conf=hslb_config()):
+        self.link =conf.link
+        self.FirmwareFile= conf.FirmwareFile
+        self.FilePath = conf.FilePath
+        self.timeout = conf.timeout
+        self.reghs_options = conf.reghs_options
+    
 
 class py_hslb:
     def __init__(self,shell=baseShell(),hslb_c=hslb_config):
@@ -22,6 +30,11 @@ class py_hslb:
 
     def status(self):
         line = self.config.FilePath+"staths " + self.config.link
+        ret = self.shell.sendAndRecieve(line)
+        return ret
+
+    def test(self):
+        line = self.config.FilePath+"tesths " + self.config.link
         ret = self.shell.sendAndRecieve(line)
         return ret
         
