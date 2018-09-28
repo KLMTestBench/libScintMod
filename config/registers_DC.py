@@ -106,3 +106,7 @@ class dcregs(Scint_Parser_Lane_1, Scint_Parser_Lane_2, DAQ_Path): #
     LKBK_STOP_C = DAQ.LKBK_STOP_C
     LKBK_STRT_F = DAQ.LKBK_STRT_F
     LKBK_STOP_F = DAQ.LKBK_STOP_F
+
+class ftsw_register:
+    trigger_limiter = '0x9f0'
+    lookBackWindow =  '0x9e0'
