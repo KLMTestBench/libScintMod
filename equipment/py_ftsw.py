@@ -4,15 +4,27 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir) 
 
 from Linux_Helpers.shell import baseShell
+from config.registers_DC import ftsw_register
 
+    
 class ftsw_conf:
     ID = 00
-    port = 'p0'
+
+class ftsw_conf_obj:
+    def __init__(self):
+        self.ID = 00
+
+def create_ftsw(shell_factory, ftsw_conf):
+    f_conf = ftsw_conf_obj()
+    f_conf.ID = int(ftsw_conf.ID.at[0])
+
+    host_config = str(ftsw_conf.Host.at[0])
+    shell = shell_factory.get_shell(host_config)
+
+    ftsw = py_ftsw(shell=shell,conf= f_conf)
+    return ftsw
 
 
-class ftsw_register:
-    trigger_limiter = "9f0"
-    lookBackWindow =  "9e0"
 
 class py_ftsw:
     def __init__(self,shell=baseShell() , conf=ftsw_conf()):
