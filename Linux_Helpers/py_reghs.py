@@ -12,7 +12,7 @@ class reghs_conf:
 def convert( aString ):
     if isinstance(aString,int):
         return int(aString)
-    elif aString.startswith("0x") or aString.startswith("0X"):
+    elif isinstance(aString,str) and (aString.startswith("0x") or aString.startswith("0X")):
         return int(aString,16)
     else:
         return int(aString)
