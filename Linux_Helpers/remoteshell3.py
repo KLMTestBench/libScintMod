@@ -6,13 +6,15 @@ import time
 import re
 
 
-
 def get_port(host):
   if hasattr(host, 'port'):
-    return host.port
+    return int(host.port)
+  if hasattr(host, 'Port'):
+    return int(host.Port)
 
-  return 22
+  return int(22)
 
+  
 def escape_ansi(line):
     ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
     return ansi_escape.sub('', line)
@@ -36,12 +38,14 @@ def remove_comand(line,searchFor='\n'):
 
 def handle_startcommand(chan,startup):
     if isinstance(startup,str):
-        x = chan.sendAndRecieve(startup)
+        x = chan.sendAndRecieveRaw(startup)
         #print(x) 
     else:
         for line in startup:
-            x = chan.sendAndRecieve(line)
+            x = chan.sendAndRecieveRaw(line)
             #print(x)
+
+    
 
 def connect(client,host):
     if host.IdentityFile:
@@ -75,11 +79,11 @@ class remoteShell3(baseShell):
     
 
   def sendLine(self, line):
-    self.sendAndRecieve(line)
+    self.sendAndRecieveRaw(line)
       
       
 
-  def sendAndRecieve(self,line,removePromt=True):
+  def sendAndRecieveRaw(self,line,removePromt=True):
     line = Correct_line_ending(line)
     self.chan.send(line)
     time.sleep(self.readDeley)
@@ -89,15 +93,15 @@ class remoteShell3(baseShell):
         b64 = data.decode()
         ret = ret + escape_ansi(b64)
     if removePromt:
-        ret = remove_comand_promt(ret)
+        ret = remove_comand_promt(ret, searchFor=self.conf.endstring)
     return ret
 
-  def sendAndRecieveLong(self,line,tries = 50,endstr = None):
+  def sendAndRecieve(self,line,removePromt=True,tries = 100,endstr = None):
     if endstr == None:
         endstr = self.conf.endstring
 
     ret = ""
-    x = self.sendAndRecieve(line)
+    x = self.sendAndRecieveRaw(line)
     #print(x)
     x=remove_comand(x)
     #print(x)
@@ -118,16 +122,17 @@ class remoteShell3(baseShell):
         x =self.sendAndRecieveNN('',removePromt=False)
         #print(x)
     #print(ret)
-    ret=remove_comand_promt(ret,endstr)        
+    if removePromt:
+        ret = remove_comand_promt(ret,searchFor=endstr)    
     return ret
 
   def sendAndRecieveLong2(self,line,SleepFor = 5,removePromt=True):
     dummyFile = "~/dummy.txt"
     ret = ""
-    x = self.sendAndRecieve(line+" > " + dummyFile +" 2>&1" )
+    x = self.sendAndRecieveRaw(line+" > " + dummyFile +" 2>&1" )
     ret +=x
     time.sleep(SleepFor)
-    x = self.sendAndRecieve("cat " + dummyFile,removePromt)
+    x = self.sendAndRecieveRaw("cat " + dummyFile,removePromt)
     ret +=x
     return ret
 
