@@ -1,4 +1,5 @@
 from Linux_Helpers.shell import baseShell
+from scp import SCPClient
 import os
 import base64
 import paramiko
@@ -26,8 +27,16 @@ class remoteShell2(baseShell):
     self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     connect(self.client,host)
     
-    
 
+  def copyTo(self, SourceName,TargetName):
+    with SCPClient(self.client.get_transport()) as scp:
+      scp.put(SourceName, TargetName)
+    
+  def copyFrom(self, SourceName,TargetName):
+    with SCPClient(self.client.get_transport()) as scp:
+      scp.get(SourceName,TargetName)
+    
+    
   def sendLine(self, line):
     
     stdin, stdout, stderr = self.client.exec_command(line)
@@ -43,3 +52,4 @@ class remoteShell2(baseShell):
     y = ''.join(y)
     x=x+y
     return x
+  

@@ -1,4 +1,5 @@
 from Linux_Helpers.shell import baseShell
+from scp import SCPClient
 import os
 import base64
 import paramiko
@@ -76,7 +77,13 @@ class remoteShell3(baseShell):
     handle_startcommand(self,host.startCommand)
 
 
+  def copyTo(self, SourceName,TargetName):
+    scp = SCPClient(self.client.get_transport())
+    scp.put(SourceName, TargetName)
     
+  def copyFrom(self, SourceName,TargetName):
+    scp = SCPClient(sh.client.get_transport())
+    scp.get(SourceName,TargetName)    
 
   def sendLine(self, line):
     self.sendAndRecieveRaw(line)
