@@ -5,7 +5,7 @@ import base64
 import paramiko
 import time
 import re
-
+from threading import Thread, Lock
 
 def get_port(host):
   if hasattr(host, 'port'):
@@ -46,6 +46,16 @@ def handle_startcommand(chan,startup):
             x = chan.sendAndRecieveRaw(line)
             #print(x)
 
+
+def streamOutEX(rShell,dummy):
+    
+    while rShell.ThreadRunning:
+        
+        r = rShell.Recieve()
+        if len(r) > 0:
+            rShell.StreaOut(r)
+        
+        
     
 
 def connect(client,host):
@@ -66,6 +76,8 @@ class remoteShell3(baseShell):
     self.chan = self.client.invoke_shell()
     self.chan.set_combine_stderr(True)
     self.bufsize=256
+    self.ThreadRunning = False
+    self.StreaOut = print
     time.sleep(self.readDeley)
     ret = ''
     while self.chan.recv_ready():
@@ -86,13 +98,12 @@ class remoteShell3(baseShell):
     scp.get(SourceName,TargetName)    
 
   def sendLine(self, line):
-    self.sendAndRecieveRaw(line)
-      
+    line = Correct_line_ending(line)
+    self.chan.send(line)      
       
 
   def sendAndRecieveRaw(self,line,removePromt=True):
-    line = Correct_line_ending(line)
-    self.chan.send(line)
+    self.sendLine(line)
     time.sleep(self.readDeley)
     ret = ''
     while self.chan.recv_ready():
@@ -167,3 +178,25 @@ class remoteShell3(baseShell):
         ret = ret + escape_ansi(b64)
     
     return ret
+    
+
+    
+    
+  def streamOut(self,streamFunction = print):
+    self.StopStream()
+    
+    self.StreaOut = streamFunction
+    
+    self.ThreadRunning = True
+    self.thread= Thread(target = streamOutEX, args = (self,10))
+    self.thread.start()
+
+  def StopStream(self):
+    
+    if self.ThreadRunning:
+        
+        self.ThreadRunning = False
+        self.thread.join()
+        
+        
+    

@@ -27,11 +27,18 @@ class ssh_host_obj:
         self.IdentityFile = host_config.IdentityFile.at[0]
         self.Port = host_config.Port.at[0]
         self.endstring = host_config.endstring.at[0]
-        self.StartCommands = host_config.StartCommands.at[0]
+        self.startCommand = ""#host_config.StartCommands.at[0]
         self.RemoteShell =  host_config.RemoteShell.at[0]
 
     
-
+def convertKnownHost2ssh_host(Known_hosts,Configuration):
+    conf = pd.DataFrame([Configuration])
+    known_host1  = pd.merge(Known_hosts, conf ,left_on='ConfigName', right_on=0) 
+    
+    ret_ssh = ssh_host_obj(known_host1)
+    return ret_ssh
+        
+    
 def ConvertNANtoNone(x):
     if isinstance(x,float):
         if math.isnan(x):
